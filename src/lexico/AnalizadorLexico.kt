@@ -1,0 +1,4 @@
+package lexico
+
+class AnalizadorLexico {
+}
