@@ -1,14 +1,14 @@
 package lexico
 
 class AnalizadorLexico {
-    var codigoFuente : String ?= null
-    var caracterActual : Char ?= null
-    var finCodigo : Char ?= null
-    var posicionActual : Int = 0
-    var columnaActual : Int = 0
-    var filaActual : Int = 0
-    var tablaSimbolos = ArrayList<Token>()
-    var tablaErrores = ArrayList<Token>()
+    private var codigoFuente : String ?= null
+    private var caracterActual : Char ?= null
+    private var finCodigo : Char ?= null
+    private var posicionActual : Int = 0
+    private var columnaActual : Int = 0
+    private var filaActual : Int = 0
+    private var tablaSimbolos = ArrayList<Token>()
+    private var tablaErrores = ArrayList<Token>()
 
     constructor(codigo : String){
         this.codigoFuente = codigo
@@ -20,39 +20,104 @@ class AnalizadorLexico {
 
     fun analizar(){
 
-    }
-
-    /**
-     * Metodo para devolver el proceso de metodos de predicado
-     * @param {posición hasta donde devolverse} posInicial
-     */
-    fun hacerBactracking(posInicial:Int) {
-        if (posicionActual === codigoFuente!!.length - 1) {
-            caracterActual = finCodigo
-
-        } else {
-            if (caracterActual === '\n') {
-                filaActual++
-                columnaActual = 0
-
-            } else {
-                columnaActual++;
+        while (caracterActual != finCodigo) {
+            if (caracterActual == ' ' || caracterActual == '\n' || caracterActual == '\t' || caracterActual == '\r') {
+                obtenerSiguienteCaracter();
+                continue;
             }
-            posicionActual++;
-            caracterActual = codigoFuente!!.get(posInicial);
+            if (esPalabraReservadaPaquete()) {
+                continue;
+            }
+            if (esPalabraReservadaClase())
+                continue;
+            if (esPalabraReservadaPrivado())
+                continue;
+            if (esPalabraReservadaPublico())
+                continue;
+            if (esPalabraReservadaMientras())
+                continue;
+            if (esPalabraReservadaRetorno())
+                continue;
+            if (esPalabraReservadaPara())
+                continue;
+            if (esPalabraReservadaImportar())
+                continue;
+            if (esPalabraReservadaSi())
+                continue;
+            if (esPalabraReservadaEntero())
+                continue;
+            if (esPalabraReservadaLeer())
+                continue;
+            if (esPalabraReservadaReal())
+                continue;
+            if (esPalabraReservadaCadena())
+                continue;
+            if (esPalabraReservadaImprimir())
+                continue;
+            if (esPalabraReservadaBooleano())
+                continue;
+            if (esPalabraReservadaNoRetorno())
+                continue;
+            if (esFinSentencia())
+                continue;
+            if (esEntero())
+                continue;
+            if (esReal())
+                continue;
+            if (esCadenaCaracteres())
+                continue;
+            if (esComentarioLinea())
+                continue;
+            if (esOperadorAsignacion())
+                continue;
+            if (esOperadorRelacional())
+                continue;
+            if (esComentarioBloque())
+                continue;
+            if (esIdentificadorVariable())
+                continue;
+            if (esIdentificadorMetodo())
+                continue;
+            if (esIdentificadorClase())
+                continue;
+            if (esOperadorLogico())
+                continue;
 
+            if (esOperadorAritmetico())
+                continue;
+            if (esCaracter())
+                continue;
+            if (esAgrupador())
+                continue;
+
+            if (esSeparador())
+                continue;
+            if (esPunto())
+                continue;
+            if (esIncremento())
+                continue;
+            if (esConcatenar())
+                continue;
+            if (esDecremento())
+                continue;
+
+            reportarError("" + caracterActual, filaActual, columnaActual, posicionActual);
+            obtenerSiguienteCaracter();
         }
+
     }
+
+
 
     /**
      * Metodo que continua con el siguiente caracter del codigo fuente
      */
-    fun obtenerSiguienteCaracter(){
-        if (posicionActual === codigoFuente!!.length - 1) {
+    private fun obtenerSiguienteCaracter(){
+        if (posicionActual == codigoFuente!!.length - 1) {
             caracterActual = finCodigo
 
         } else {
-            if (caracterActual === '\n') {
+            if (caracterActual == '\n') {
                 filaActual++;
                 columnaActual = 0;
 
@@ -68,7 +133,7 @@ class AnalizadorLexico {
      * Metodo para devolver el proceso de metodos de predicado
      * @param {posición hasta donde devolverse} posInicial
      */
-    fun hacerBacktracking(posInicial:Int) {
+    private fun hacerBacktracking(posInicial:Int) {
         posicionActual = posInicial
         caracterActual = codigoFuente!!.get(posicionActual)
     }
@@ -98,9 +163,9 @@ class AnalizadorLexico {
      */
     fun esEntero():Boolean{
         var palabra = ""
-        var filaInicio = filaActual
-        var columnaInicio = columnaActual
-        var guardarPos = posicionActual
+        val filaInicio = filaActual
+        val columnaInicio = columnaActual
+        val guardarPos = posicionActual
 
         if (caracterActual!!.isDigit()) {
             palabra += caracterActual
@@ -111,7 +176,7 @@ class AnalizadorLexico {
                 obtenerSiguienteCaracter()
             }
 
-            if (caracterActual === ',') {
+            if (caracterActual == ',') {
                 posicionActual = guardarPos
                 caracterActual = codigoFuente!!.get(posicionActual)
                 return false
@@ -126,9 +191,9 @@ class AnalizadorLexico {
      */
     fun esReal():Boolean{
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual!!.isDigit()) {
             lexema += caracterActual
@@ -137,7 +202,7 @@ class AnalizadorLexico {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
             }
-            if (caracterActual === ',') {
+            if (caracterActual == ',') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
                 if (caracterActual!!.isDigit()) {
@@ -156,7 +221,7 @@ class AnalizadorLexico {
 
             return true
         }
-        if (caracterActual === ',') {
+        if (caracterActual == ',') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
             if (caracterActual!!.isDigit()) {
@@ -182,9 +247,9 @@ class AnalizadorLexico {
      */
     fun esOperadorAritmetico():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == '.') {
             lexema += caracterActual
@@ -290,7 +355,7 @@ class AnalizadorLexico {
     /**
      * Metodo que se encarga de determinar si lo ingresado es un operador relacional
      */
-    fun operadorRelacional(): Boolean {
+    fun esOperadorRelacional(): Boolean {
         var lexema = ""
         var filaInicial = filaActual
         var columnaInicial = columnaActual
@@ -348,7 +413,7 @@ class AnalizadorLexico {
         var columnaInicial = columnaActual
         var posicionInicial = posicionActual
 
-        if (caracterActual === ':') {
+        if (caracterActual == ':') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
             if (caracterActual == ':' || caracterActual == '+' || caracterActual == '-' || caracterActual == '*' || caracterActual == '/') {
@@ -394,12 +459,13 @@ class AnalizadorLexico {
     }
     /**
      * Metodo que determina si lo ingresado es fin de sentencia
+     * Metodo que determina si lo ingresado es fin de sentencia
      */
     fun esFinSentencia():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == '%') {
             lexema += caracterActual
@@ -414,8 +480,8 @@ class AnalizadorLexico {
      */
     fun esSeparador(): Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
         var posicionInicial = posicionActual
 
         if (caracterActual == ';') {
@@ -432,9 +498,9 @@ class AnalizadorLexico {
      */
     fun esPunto():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == '.') {
             lexema += caracterActual
@@ -457,9 +523,9 @@ class AnalizadorLexico {
      */
     fun esDosPuntos():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == '.') {
             lexema += caracterActual
@@ -481,9 +547,9 @@ class AnalizadorLexico {
      */
     fun esComentarioLinea():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == '-') {
             lexema += caracterActual
@@ -519,9 +585,9 @@ class AnalizadorLexico {
      */
     fun esComentarioBloque():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == '_') {
             lexema += caracterActual
@@ -566,9 +632,9 @@ class AnalizadorLexico {
      */
     fun esCadenaCaracteres():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == '_') {
             lexema += caracterActual
@@ -608,9 +674,9 @@ class AnalizadorLexico {
      */
     fun esCaracter():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == '"') {
             lexema += caracterActual
@@ -618,7 +684,7 @@ class AnalizadorLexico {
             if (caracterActual == '|') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
-                if (caracterActual === '"' || caracterActual == 'n' || caracterActual == 't' || caracterActual == 'f' ||
+                if (caracterActual == '"' || caracterActual == 'n' || caracterActual == 't' || caracterActual == 'f' ||
                         caracterActual == 'b' || caracterActual == '\\' || caracterActual == 'r' || caracterActual == '|') {
                     lexema += caracterActual
                     obtenerSiguienteCaracter()
@@ -663,14 +729,14 @@ class AnalizadorLexico {
      */
     fun esConcatenar():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
-        if (caracterActual === '>') {
+        if (caracterActual == '>') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            if (caracterActual === '<') {
+            if (caracterActual == '<') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
                 almacenarSimbolo(lexema, filaInicial, columnaInicial, Categoria.CONCATENACION)
@@ -688,11 +754,11 @@ class AnalizadorLexico {
      */
     fun esIdentificadorClase():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
-        if (caracterActual === '$') {
+        if (caracterActual == '$') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
             return if (caracterActual!!.isUpperCase()) {
@@ -718,9 +784,9 @@ class AnalizadorLexico {
      */
     fun esIdentificadorMetodo():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == '!') {
             lexema += caracterActual
@@ -749,11 +815,11 @@ class AnalizadorLexico {
      */
     fun esIdentificadorVariable():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
-        if (caracterActual === '#') {
+        if (caracterActual == '#') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
             return if (caracterActual!!.isLowerCase()) {
@@ -777,9 +843,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaClase():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'C') {
             lexema += caracterActual
@@ -822,9 +888,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaPaquete():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'P') {
             lexema += caracterActual
@@ -881,9 +947,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaPrivado():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'P') {
             lexema += caracterActual
@@ -939,9 +1005,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaPublico():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'P') {
             lexema += caracterActual
@@ -999,9 +1065,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaRetorno():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'R') {
             lexema += caracterActual
@@ -1058,9 +1124,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaMientras():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'M') {
             lexema += caracterActual
@@ -1125,9 +1191,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaPara():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'P') {
             lexema += caracterActual
@@ -1163,9 +1229,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaSi():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual === 'S') {
             lexema += caracterActual
@@ -1187,9 +1253,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaLeer():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'L') {
             lexema += caracterActual
@@ -1220,9 +1286,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaReal():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'R') {
             lexema += caracterActual
@@ -1258,9 +1324,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaEntero():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'E') {
             lexema += caracterActual
@@ -1310,9 +1376,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaCadena():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'C') {
             lexema += caracterActual
@@ -1362,9 +1428,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaImprimir():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'I') {
             lexema += caracterActual
@@ -1428,9 +1494,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaImportar():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'I') {
             lexema += caracterActual
@@ -1453,7 +1519,7 @@ class AnalizadorLexico {
                                 if (caracterActual == 'A') {
                                     lexema += caracterActual
                                     obtenerSiguienteCaracter()
-                                    return if (caracterActual === 'R') {
+                                    return if (caracterActual == 'R') {
                                         lexema += caracterActual
                                         obtenerSiguienteCaracter()
                                         almacenarSimbolo(lexema, filaInicial, columnaInicial, Categoria.PALABRA_RESERVADA)
@@ -1494,9 +1560,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaBooleano():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'B') {
             lexema += caracterActual
@@ -1560,9 +1626,9 @@ class AnalizadorLexico {
      */
     fun esPalabraReservadaNoRetorno():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == 'N') {
             lexema += caracterActual
