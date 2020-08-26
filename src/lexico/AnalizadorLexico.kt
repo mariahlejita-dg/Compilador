@@ -12,7 +12,7 @@ class AnalizadorLexico {
 
     constructor(codigo : String){
         this.codigoFuente = codigo
-        this.caracterActual = codigoFuente!!.get(0)
+        this.caracterActual = codigoFuente!![0]
         this.tablaErrores = ArrayList()
         this.tablaSimbolos = ArrayList()
         this.finCodigo = '0'
@@ -22,87 +22,89 @@ class AnalizadorLexico {
 
         while (caracterActual != finCodigo) {
             if (caracterActual == ' ' || caracterActual == '\n' || caracterActual == '\t' || caracterActual == '\r') {
-                obtenerSiguienteCaracter();
-                continue;
+                obtenerSiguienteCaracter()
+                continue
             }
             if (esPalabraReservadaPaquete()) {
-                continue;
+                continue
             }
             if (esPalabraReservadaClase())
-                continue;
+                continue
             if (esPalabraReservadaPrivado())
-                continue;
+                continue
             if (esPalabraReservadaPublico())
-                continue;
+                continue
             if (esPalabraReservadaMientras())
-                continue;
+                continue
             if (esPalabraReservadaRetorno())
-                continue;
+                continue
             if (esPalabraReservadaPara())
-                continue;
+                continue
             if (esPalabraReservadaImportar())
-                continue;
+                continue
             if (esPalabraReservadaSi())
-                continue;
+                continue
             if (esPalabraReservadaEntero())
-                continue;
+                continue
+            if (esDosPuntos())
+                continue
             if (esPalabraReservadaLeer())
-                continue;
+                continue
             if (esPalabraReservadaReal())
-                continue;
+                continue
             if (esPalabraReservadaCadena())
-                continue;
+                continue
             if (esPalabraReservadaImprimir())
-                continue;
+                continue
             if (esPalabraReservadaBooleano())
-                continue;
+                continue
             if (esPalabraReservadaNoRetorno())
-                continue;
+                continue
             if (esFinSentencia())
-                continue;
+                continue
             if (esEntero())
-                continue;
+                continue
             if (esReal())
-                continue;
+                continue
             if (esCadenaCaracteres())
-                continue;
+                continue
             if (esComentarioLinea())
-                continue;
+                continue
             if (esOperadorAsignacion())
-                continue;
+                continue
             if (esOperadorRelacional())
-                continue;
+                continue
             if (esComentarioBloque())
-                continue;
+                continue
             if (esIdentificadorVariable())
-                continue;
+                continue
             if (esIdentificadorMetodo())
-                continue;
+                continue
             if (esIdentificadorClase())
-                continue;
+                continue
             if (esOperadorLogico())
-                continue;
+                continue
 
             if (esOperadorAritmetico())
-                continue;
+                continue
             if (esCaracter())
-                continue;
+                continue
             if (esAgrupador())
-                continue;
+                continue
 
             if (esSeparador())
-                continue;
+                continue
             if (esPunto())
-                continue;
+                continue
             if (esIncremento())
-                continue;
+                continue
             if (esConcatenar())
-                continue;
+                continue
             if (esDecremento())
-                continue;
+                continue
 
-            reportarError("" + caracterActual, filaActual, columnaActual, posicionActual);
-            obtenerSiguienteCaracter();
+            reportarError("" + caracterActual, filaActual, columnaActual, posicionActual)
+            obtenerSiguienteCaracter()
         }
 
     }
@@ -118,14 +120,14 @@ class AnalizadorLexico {
 
         } else {
             if (caracterActual == '\n') {
-                filaActual++;
-                columnaActual = 0;
+                filaActual++
+                columnaActual = 0
 
             } else {
-                columnaActual++;
+                columnaActual++
             }
-            posicionActual++;
-            caracterActual = codigoFuente!!.get(posicionActual);
+            posicionActual++
+            caracterActual = codigoFuente!![posicionActual]
 
         }
     }
@@ -135,7 +137,7 @@ class AnalizadorLexico {
      */
     private fun hacerBacktracking(posInicial:Int) {
         posicionActual = posInicial
-        caracterActual = codigoFuente!!.get(posicionActual)
+        caracterActual = codigoFuente!![posicionActual]
     }
     /**
      * Metodo que almacena un codigo desconocido del sistema
@@ -144,7 +146,7 @@ class AnalizadorLexico {
      * @param {* Columna donde inicio el simbolo} columna
      * @param {* categoría del simbolo} categoria
      */
-    fun almacenarSimbolo(lexema:String,fila:Int,columna:Int,categoria: Categoria){
+    private fun almacenarSimbolo(lexema:String,fila:Int,columna:Int,categoria: Categoria){
         tablaSimbolos.add(Token(lexema,fila,columna, categoria))
     }
 
@@ -155,7 +157,7 @@ class AnalizadorLexico {
      * @param {* La columna donde se origino el error} columna
      * @param {*} posicionInicial
      */
-    fun reportarError(lexema: String,fila: Int,columna: Int,posicionInicial:Int){
+    private fun reportarError(lexema: String,fila: Int,columna: Int,posicionInicial:Int){
         tablaErrores.add(Token(lexema,fila,columna,posicionInicial-fila,Categoria.DESCONOCIDO))
     }
     /**
@@ -357,14 +359,14 @@ class AnalizadorLexico {
      */
     fun esOperadorRelacional(): Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
         //Reconoce si lo ingresado es el operador relacional menor que
-        if (caracterActual === '<') {
+        if (caracterActual == '<') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            if (caracterActual === '<') {
+            if (caracterActual == '<') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
                 almacenarSimbolo(lexema, filaInicial, columnaInicial, Categoria.OPERADOR_RELACIONAL)
@@ -378,7 +380,7 @@ class AnalizadorLexico {
         if (caracterActual == '>') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            if (caracterActual === '>') {
+            if (caracterActual == '>') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
                 almacenarSimbolo(lexema, filaInicial, columnaInicial, Categoria.OPERADOR_RELACIONAL)
@@ -388,10 +390,10 @@ class AnalizadorLexico {
             }
         }
         // Reconoce si lo ingresado es el operador relacional mayor igual que, menor igual que, igual igual a y diferente de
-        if (caracterActual === ':') {
+        if (caracterActual == ':') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            if (caracterActual === '=' || caracterActual === '<' || caracterActual === '>' || caracterActual === '¬') {
+            if (caracterActual == '=' || caracterActual == '<' || caracterActual == '>' || caracterActual == '¬') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
                 almacenarSimbolo(lexema, filaInicial, columnaInicial, Categoria.OPERADOR_RELACIONAL)
@@ -409,9 +411,9 @@ class AnalizadorLexico {
      */
     fun esOperadorAsignacion():Boolean {
         var lexema = ""
-        var filaInicial = filaActual
-        var columnaInicial = columnaActual
-        var posicionInicial = posicionActual
+        val filaInicial = filaActual
+        val columnaInicial = columnaActual
+        val posicionInicial = posicionActual
 
         if (caracterActual == ':') {
             lexema += caracterActual
@@ -465,7 +467,6 @@ class AnalizadorLexico {
         var lexema = ""
         val filaInicial = filaActual
         val columnaInicial = columnaActual
-        val posicionInicial = posicionActual
 
         if (caracterActual == '%') {
             lexema += caracterActual
@@ -482,7 +483,6 @@ class AnalizadorLexico {
         var lexema = ""
         val filaInicial = filaActual
         val columnaInicial = columnaActual
-        var posicionInicial = posicionActual
 
         if (caracterActual == ';') {
             lexema += caracterActual
@@ -1233,10 +1233,10 @@ class AnalizadorLexico {
         val columnaInicial = columnaActual
         val posicionInicial = posicionActual
 
-        if (caracterActual === 'S') {
+        if (caracterActual == 'S') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            return if (caracterActual === 'I') {
+            return if (caracterActual == 'I') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
                 almacenarSimbolo(lexema, filaInicial, columnaInicial, Categoria.PALABRA_RESERVADA)
